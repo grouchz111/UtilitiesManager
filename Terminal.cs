@@ -1,96 +1,84 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace UtilitiesManager
 {
     public static class TerminalCommands
     {
-        public static int RunSilent(string command, int timeoutMilliseconds = Timeout.Infinite)
+        // Terminal helper
+        public static async Task<string> RunCommandAsync(string command, int timeoutMs = Timeout.Infinite)
         {
-            var psi = BuildStartInfo(command);
-
-            // We MUST capture output now
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardError = true;
-
-            using var process = new Process { StartInfo = psi };
-
-            process.Start();
-
-            string output = process.StandardOutput.ReadToEnd().Trim();
-
-            bool exited = process.WaitForExit(timeoutMilliseconds);
-            if (!exited)
+            var psi = new ProcessStartInfo
             {
-                try { process.Kill(true); } catch { }
-                return -1;
-            }
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{command.Replace("\"", "\\\"")}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var process = new Process { StartInfo = psi };
+            process.Start();
+            string output = await process.StandardOutput.ReadToEndAsync();
+            string error = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
+            return output.Trim();  // ← note: we ignore error stream here – if command fails, you'll get empty string
+        }
+    }
 
-            // Try to parse the output as an int
+    public class ChangeValueCommand
+    {
+        public async Task SetBrightnessAsync(int value)
+        {
+            // Added % suffix – brightnessctl requires it for percentage mode
+            await TerminalCommands.RunCommandAsync($"brightnessctl set {value}%");
+        }
+
+        public async Task SetVolumeAsync(int percentage)
+        {
+            await TerminalCommands.RunCommandAsync(
+                $"pactl set-sink-volume @DEFAULT_SINK@ {percentage}%"
+            );
+        }
+    }
+
+    public class CheckDependencyCommand
+    {
+        public int OriginalValueLight { get; private set; }
+        public int OriginalValueSound { get; private set; }
+
+        // Load both values at startup
+        public async Task LoadOriginalValuesAsync()
+        {
+            OriginalValueLight = await GetBrightnessAsync();
+            OriginalValueSound = await GetVolumeAsync();
+        }
+
+        // BRIGHTNESS 
+        public async Task<int> GetBrightnessAsync()
+        {
+  
+     
+            string output = await TerminalCommands.RunCommandAsync("brightnessctl get");
             if (int.TryParse(output, out int value))
                 return value;
-
-            return -1; // failed to parse
+            return -1;  
         }
 
-        public static Task<int> RunSilentAsync(string command, int timeoutMilliseconds = Timeout.Infinite)
+        // VOLUME 
+        public async Task<int> GetVolumeAsync()
         {
-            return Task.Run(() => RunSilent(command, timeoutMilliseconds));
-        }
-
-        private static ProcessStartInfo BuildStartInfo(string command)
-        {
-            if (OperatingSystem.IsWindows())
-            {
-                return new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = "/c " + command,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-            }
-            else
-            {
-                string escaped = command.Replace("\"", "\\\"");
-                return new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{escaped}\"",
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-            }
-        }
-    }
-
-    // Class for reading brightness
-    public class BrightnessCommand
-    {
-        public int Run(int timeoutMs = Timeout.Infinite)
-        {
-            return TerminalCommands.RunSilent("brightnessctl get", timeoutMs);
-        }
-
-        public Task<int> RunAsync(int timeoutMs = Timeout.Infinite)
-        {
-            return TerminalCommands.RunSilentAsync("brightnessctl get", timeoutMs);
-        }
-    }
-
-    // Class for reading default sink volume via pactl
-    public class VolumeCommand
-    {
-        public int Run(int timeoutMs = Timeout.Infinite)
-        {
-            return TerminalCommands.RunSilent("pactl get-sink-volume @DEFAULT_SINK@", timeoutMs);
-        }
-
-        public Task<int> RunAsync(int timeoutMs = Timeout.Infinite)
-        {
-            return TerminalCommands.RunSilentAsync("pactl get-sink-volume @DEFAULT_SINK@", timeoutMs);
+            string output = await TerminalCommands.RunCommandAsync(
+                "pactl get-sink-volume @DEFAULT_SINK@"
+            );
+            // Extract the first percentage value (e.g., "100%")
+            var match = Regex.Match(output, @"(\d+)%");
+            if (match.Success)
+                return int.Parse(match.Groups[1].Value);
+            return -1;
         }
     }
 }

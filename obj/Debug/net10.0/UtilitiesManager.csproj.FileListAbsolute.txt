@@ -71,3 +71,4 @@
 /home/mr-owl/UtilitiesManager/obj/Debug/net10.0/Avalonia/Resources.Inputs.cache
 /home/mr-owl/UtilitiesManager/obj/Debug/net10.0/Avalonia/resources
 /home/mr-owl/UtilitiesManager/obj/Debug/net10.0/Utilitie.271F01B4.Up2Date
+/home/mr-owl/UtilitiesManager/obj/Debug/net10.0/UtilitiesManager.sourcelink.json

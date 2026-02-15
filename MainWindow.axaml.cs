@@ -7,8 +7,11 @@ namespace UtilitiesManager;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
-    private int _soundLevel = 50;
-    private int _brightness = 75;
+    private readonly CheckDependencyCommand _checker = new();
+    private readonly ChangeValueCommand _changer = new();  
+
+    private int _soundLevel;
+    private int _brightness;
 
     public int SoundLevel
     {
@@ -18,6 +21,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (_soundLevel != value)
             {
                 _soundLevel = value;
+                _ = _changer.SetVolumeAsync(value);  // ← now actually sets volume
                 OnPropertyChanged();
             }
         }
@@ -31,6 +35,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             if (_brightness != value)
             {
                 _brightness = value;
+                _ = _changer.SetBrightnessAsync(value);  // ← now actually sets brightness
                 OnPropertyChanged();
             }
         }
@@ -42,12 +47,18 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 #if DEBUG
         this.AttachDevTools();
 #endif
-
-        // Optional: set initial DataContext to self (code-behind style)
         DataContext = this;
+        InitializeValues();
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private async void InitializeValues()
+    {
+        await _checker.LoadOriginalValuesAsync();
+        SoundLevel = _checker.OriginalValueSound;
+        Brightness = _checker.OriginalValueLight;
+    }
+
+    public new event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

@@ -6,48 +6,39 @@
         x:Class="UtilitiesManager.MainWindow"
         Title="UtilitiesManager"
         WindowStartupLocation="CenterScreen"
-        x:CompileBindings="False">   <!-- ← this line kills the errors -->
+        x:CompileBindings="False"> <!-- ← this line kills the errors -->
 
     <Window.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="Margin" Value="0,8,0,4"/>
+            <Setter Property="Margin" Value="0,5,0,1"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
         <Style Selector="Slider">
             <Setter Property="Margin" Value="0,0,0,16"/>
-            <Setter Property="Height" Value="32"/>
         </Style>
     </Window.Styles>
 
-    <StackPanel Margin="24,32,24,24"
+    <StackPanel Margin="25,35,25,25"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 MaxWidth="420">
-
         <TextBlock Text="Utility Manager v0.0 – "
                    FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-
         <TextBlock Text="Slider 1 – Sound Level"/>
-
         <Slider Minimum="0" Maximum="100"
                 Value="{Binding SoundLevel}"
                 TickFrequency="1" IsSnapToTickEnabled="True"/>
-
         <TextBlock Text="{Binding SoundLevel, StringFormat='Volume {0:F0}%'}"
                    HorizontalAlignment="Center"
                    FontWeight="SemiBold"
                    Foreground="#000000"/>
-
         <TextBlock Text="Slider 2 – Screen Brightness"/>
-
         <Slider Minimum="0" Maximum="100"
                 Value="{Binding Brightness}"
                 TickFrequency="1" IsSnapToTickEnabled="True"/>
-
         <TextBlock Text="{Binding Brightness, StringFormat='Brightness: {0:F0}% – '}"
                    HorizontalAlignment="Center"
                    FontWeight="SemiBold"
                    Foreground="#000000"/>
-
     </StackPanel>
 </Window>
