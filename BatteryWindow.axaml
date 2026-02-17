@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UtilitiesManager.BatteryWindow"
+        Title="Battery Status"
+        Width="420" Height="320"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <StackPanel Margin="24" Spacing="16">
+        <TextBlock Text="Battery Status"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Foreground="{DynamicResource AccentColor}" />
+
+        <Border BorderBrush="{DynamicResource ThemeBorderMidBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,8,0,16">
+            <StackPanel Spacing="12">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Charge:" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="PercentageText" Text="??%" FontSize="18" FontWeight="Bold" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="State:" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="StateText" Text="Unknown" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Time:" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TimeText" Text="N/A" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Power:" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" x:Name="PowerText" Text="N/A" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16">
+            <Button Content="Refresh"
+                    Width="120"
+                    Click="Refresh_Click" />
+            <Button Content="Close"
+                    Width="120"
+                    Click="OnCloseClick" />
+        </StackPanel>
+    </StackPanel>
+</Window>

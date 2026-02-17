@@ -6,7 +6,7 @@
         x:Class="UtilitiesManager.MainWindow"
         Title="UtilitiesManager"
         WindowStartupLocation="CenterScreen"
-        x:CompileBindings="False"> <!-- ← this line kills the errors -->
+        x:CompileBindings="False">  <!-- keeping your escape hatch for now -->
 
     <Window.Styles>
         <Style Selector="TextBlock">
@@ -16,6 +16,11 @@
         <Style Selector="Slider">
             <Setter Property="Margin" Value="0,0,0,16"/>
         </Style>
+        <Style Selector="Button">
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="180"/>
+        </Style>
     </Window.Styles>
 
     <StackPanel Margin="25,35,25,25"
@@ -24,6 +29,7 @@
                 MaxWidth="420">
         <TextBlock Text="Utility Manager v0.0 – "
                    FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+        
         <TextBlock Text="Slider 1 – Sound Level"/>
         <Slider Minimum="0" Maximum="100"
                 Value="{Binding SoundLevel}"
@@ -32,6 +38,7 @@
                    HorizontalAlignment="Center"
                    FontWeight="SemiBold"
                    Foreground="#000000"/>
+        
         <TextBlock Text="Slider 2 – Screen Brightness"/>
         <Slider Minimum="0" Maximum="100"
                 Value="{Binding Brightness}"
@@ -40,5 +47,9 @@
                    HorizontalAlignment="Center"
                    FontWeight="SemiBold"
                    Foreground="#000000"/>
+
+        <!-- The new button that saves your soul -->
+        <Button Content="Open Battery Menu"
+                Click="OpenBattery_Click" />
     </StackPanel>
 </Window>
