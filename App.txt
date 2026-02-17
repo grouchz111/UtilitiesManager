@@ -1,0 +1,13 @@
+packages used:
+1. Brightnessctl
+2. Pactl
+
+using:
+1. GTKsharp
+2. Visual Code
+3. c# (duh)
+
+
+
+dotnet new console -o UtilitiesManager
+cd UtilitiesManager

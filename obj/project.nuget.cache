@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bnM9ioCaayU=",
+  "dgSpecHash": "t+4lpzhulec=",
   "success": true,
   "projectFilePath": "/home/mr-owl/UtilitiesManager/UtilitiesManager.csproj",
   "expectedPackageFiles": [
@@ -30,7 +30,9 @@
     "/home/mr-owl/.nuget/packages/skiasharp.nativeassets.macos/2.88.9/skiasharp.nativeassets.macos.2.88.9.nupkg.sha512",
     "/home/mr-owl/.nuget/packages/skiasharp.nativeassets.webassembly/2.88.9/skiasharp.nativeassets.webassembly.2.88.9.nupkg.sha512",
     "/home/mr-owl/.nuget/packages/skiasharp.nativeassets.win32/2.88.9/skiasharp.nativeassets.win32.2.88.9.nupkg.sha512",
-    "/home/mr-owl/.nuget/packages/tmds.dbus.protocol/0.21.2/tmds.dbus.protocol.0.21.2.nupkg.sha512"
+    "/home/mr-owl/.nuget/packages/tmds.dbus.protocol/0.21.2/tmds.dbus.protocol.0.21.2.nupkg.sha512",
+    "/home/mr-owl/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/10.0.3/microsoft.netcore.app.runtime.linux-x64.10.0.3.nupkg.sha512",
+    "/home/mr-owl/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/10.0.3/microsoft.aspnetcore.app.runtime.linux-x64.10.0.3.nupkg.sha512"
   ],
   "logs": []
 }
