@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Utilities Manager
 Exec=utilitiesmanager
-Icon=/usr/share/UtilitiesManager/icon.png
+Icon=utilitiesmanager
 Type=Application
 Categories=Utility;

@@ -8,11 +8,11 @@ namespace UtilitiesManager
 {
     public class BatteryInfo
     {
-        public string State { get; set; } = "Unknown";          // charging / discharging / fully-charged / pending-charge / empty
+        public string State { get; set; } = "Unknown";
         public int Percentage { get; set; } = -1;
         public string TimeToEmpty { get; set; } = "N/A";
         public string TimeToFull { get; set; } = "N/A";
-        public double EnergyRate { get; set; } = -1;            // W (positive charging, negative discharging usually)
+        public double EnergyRate { get; set; } = -1;
         public bool IsPresent { get; set; } = false;
     }
 
@@ -34,7 +34,7 @@ namespace UtilitiesManager
             process.Start();
 
             string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync(); // captured but ignored
+            string error = await process.StandardError.ReadToEndAsync();
 
             await process.WaitForExitAsync();
 
@@ -44,9 +44,10 @@ namespace UtilitiesManager
 
     public class ChangeValueCommand
     {
-        public async Task SetBrightnessAsync(int value)
+        public async Task SetBrightnessAsync(int percent)
         {
-            await TerminalCommands.RunCommandAsync($"brightnessctl set {value}%");
+            percent = Math.Clamp(percent, 0, 100);
+            await TerminalCommands.RunCommandAsync($"brightnessctl set {percent}%");
         }
 
         public async Task SetVolumeAsync(int percentage)
@@ -65,17 +66,24 @@ namespace UtilitiesManager
 
         public async Task LoadOriginalValuesAsync()
         {
-            OriginalValueLight = await GetBrightnessAsync();
+            OriginalValueLight = await GetBrightnessPercentAsync();
             OriginalValueSound = await GetVolumeAsync();
-            BatteryStatus = await GetBatteryAsync();  // now loads battery too
+            BatteryStatus = await GetBatteryAsync();
         }
 
-        // BRIGHTNESS
-        public async Task<int> GetBrightnessAsync()
+        // BRIGHTNESS 
+        public async Task<int> GetBrightnessPercentAsync()
         {
-            string output = await TerminalCommands.RunCommandAsync("brightnessctl get");
-            if (int.TryParse(output, out int value))
-                return value;
+            string currentStr = await TerminalCommands.RunCommandAsync("brightnessctl get");
+            string maxStr = await TerminalCommands.RunCommandAsync("brightnessctl max");
+
+            if (int.TryParse(currentStr, out int current) &&
+                int.TryParse(maxStr, out int max) &&
+                max > 0)
+            {
+                return (int)Math.Round((current / (double)max) * 100);
+            }
+
             return -1;
         }
 
@@ -93,22 +101,17 @@ namespace UtilitiesManager
             return -1;
         }
 
-        // BATTERY – the star of the show
+        // BATTERY
         public async Task<BatteryInfo> GetBatteryAsync()
         {
             var info = new BatteryInfo();
 
-            // Find the battery device
             string deviceList = await TerminalCommands.RunCommandAsync("upower -e | grep -i -m 1 battery");
             string devicePath = deviceList.Trim();
 
             if (string.IsNullOrWhiteSpace(devicePath))
-            {
-                // No battery found → desktop, VM, or unsupported hardware
                 return info;
-            }
 
-            // Get detailed info 
             string output = await TerminalCommands.RunCommandAsync($"upower -i \"{devicePath}\"");
 
             if (string.IsNullOrWhiteSpace(output))
@@ -126,7 +129,7 @@ namespace UtilitiesManager
                 }
                 else if (trimmed.StartsWith("state:", StringComparison.OrdinalIgnoreCase))
                 {
-                    info.State = trimmed.Split(new[] { ':' }, 2)[1].Trim();
+                    info.State = trimmed.Split(':')[1].Trim();
                 }
                 else if (trimmed.StartsWith("percentage:", StringComparison.OrdinalIgnoreCase))
                 {
@@ -136,19 +139,20 @@ namespace UtilitiesManager
                 }
                 else if (trimmed.StartsWith("time to empty:", StringComparison.OrdinalIgnoreCase))
                 {
-                    info.TimeToEmpty = trimmed.Split(new[] { ':' }, 2)[1].Trim();
+                    info.TimeToEmpty = trimmed.Split(':')[1].Trim();
                 }
                 else if (trimmed.StartsWith("time to full:", StringComparison.OrdinalIgnoreCase))
                 {
-                    info.TimeToFull = trimmed.Split(new[] { ':' }, 2)[1].Trim();
+                    info.TimeToFull = trimmed.Split(':')[1].Trim();
                 }
                 else if (trimmed.StartsWith("energy-rate:", StringComparison.OrdinalIgnoreCase))
                 {
-                    var match = Regex.Match(trimmed, @"([-+]?\d+(?:\.\d+)?)\s*W?");
+                    var match = Regex.Match(trimmed, @"([-+]?\d+(?:\.\d+)?)");
                     if (match.Success && double.TryParse(match.Groups[1].Value, out double rate))
                         info.EnergyRate = rate;
                 }
             }
+
             return info;
         }
     }

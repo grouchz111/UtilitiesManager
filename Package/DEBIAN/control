@@ -3,6 +3,5 @@ Version: 1.0.0
 Section: utils
 Priority: optional
 Architecture: amd64
-Maintainer: Alexander <kozlovalexander58@abv.bg>
-Description: Utilities Manager
- A desktop Utility manager built with Avalonia
+Maintainer: Alexander
+Description: Utilities Manager - Avalonia application packaged as a .deb
