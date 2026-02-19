@@ -31,6 +31,3 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/home/mr-owl/UtilitiesManager/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
-
-[/home/mr-owl/UtilitiesManager/UtilitiesManager~.axaml]
-build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
